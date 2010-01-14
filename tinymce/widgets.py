@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.admin import widgets as admin_widgets
 from django.core.urlresolvers import reverse
 from django.forms.widgets import flatatt
-from django.forms.util import smart_unicode
+from django.forms.util import force_unicode
 from django.utils.html import escape
 from django.utils import simplejson
 from django.utils.datastructures import SortedDict
@@ -49,7 +49,7 @@ class TinyMCE(forms.Textarea):
 
     def render(self, name, value, attrs=None):
         if value is None: value = ''
-        value = smart_unicode(value)
+        value = force_unicode(value)
         final_attrs = self.build_attrs(attrs)
         final_attrs['name'] = name
         assert 'id' in final_attrs, "TinyMCE widget attributes must contain 'id'"

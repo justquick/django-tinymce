@@ -1,5 +1,6 @@
 from django.db.models import get_model
 from django.contrib import admin
+from django import forms
 from widgets import TinyMCE
 import settings
 
@@ -11,13 +12,15 @@ for k,v in FIELDS.items():
         del FIELDS[k]
         
 class TinyMCEAdmin(admin.ModelAdmin):
-    fidgets = ()
+    editor_fields = ()
     def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name in self.fidgets:
-            return db_field.formfield(widget=TinyMCE(attrs={'cols': 40, 'rows': 20}))
+        if db_field.name in self.editor_fields:
+            return db_field.formfield(widget=TinyMCE())
         return super(TinyMCEAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-
+        
 for model,modeladmin in admin.site._registry.items():
     if model in FIELDS:
         admin.site.unregister(model)
-        admin.site.register(model, type('newadmin', (TinyMCEAdmin, modeladmin.__class__), {'fidgets': FIELDS[model]}))
+        admin.site.register(model, type('newadmin', (TinyMCEAdmin, modeladmin.__class__), {
+            'editor_fields': FIELDS[model],
+        }))
